@@ -239,3 +239,21 @@ sudo pacman -S --noconfirm --needed gcc make git ripgrep fd unzip neovim
 ```
 </details>
 
+
+
+# Spelling issues
+mkdir -p ~/.config/nvim/spell
+cd ~/.config/nvim/spell
+
+# Spanish
+wget https://ftp.nluug.nl/vim/runtime/spell/es.utf-8.spl
+wget https://ftp.nluug.nl/vim/runtime/spell/es.utf-8.sug
+
+# French
+wget https://ftp.nluug.nl/vim/runtime/spell/fr.utf-8.spl
+wget https://ftp.nluug.nl/vim/runtime/spell/fr.utf-8.sug
+
+# Icelandic
+wget https://ftp.nluug.nl/vim/runtime/spell/is.utf-8.spl
+wget https://ftp.nluug.nl/vim/runtime/spell/is.utf-8.sug
+
