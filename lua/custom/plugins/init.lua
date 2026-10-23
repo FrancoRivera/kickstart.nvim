@@ -80,49 +80,12 @@ return {
   { 'folke/tokyonight.nvim' },
   { 'rose-pine/neovim', name = 'rose-pine' },
   {
-    'luckasRanarison/tailwind-tools.nvim',
-    name = 'tailwind-tools',
-    build = ':UpdateRemotePlugins',
-    lazy = false, -- ensure it loads before LSP & completion
-    priority = 100, -- load early
-    dependencies = {
-      'nvim-treesitter/nvim-treesitter',
-      'nvim-telescope/telescope.nvim', -- optional
-      'neovim/nvim-lspconfig', -- optional
+    'NvChad/nvim-colorizer.lua',
+    opts = {
+      user_default_options = {
+        tailwind = true,
+      },
     },
-    config = function()
-      require('tailwind-tools').setup {
-        server = {
-          override = true,
-          settings = {
-            includeLanguages = { vue = 'html' }, -- example
-          },
-        },
-      }
-    end,
-
-    -- server = {
-    --   override = true, -- setup the server from the plugin if true
-    --   settings = { -- shortcut for `settings.tailwindCSS`
-    --     -- experimental = {
-    --     --   classRegex = { "tw\\('([^']*)'\\)" }
-    --     -- },
-    --     includeLanguages = {
-    --         vue = "html",
-    --   clojure = "html",
-    --   eelixir = "html-eex",
-    --   elixir = "phoenix-heex",
-    --   eruby = "erb",
-    --   heex = "phoenix-heex",
-    --   htmlangular = "html",
-    --   rust = "html",
-    --   templ = "html",
-    --     },
-    --     -- },
-    --   on_attach = function(client, bufnr) end, -- callback executed when the language server gets attached to a buffer
-    --   root_dir = function(fname) end, -- overrides the default function for resolving the root directory
-    -- },
-    -- }, -- your configuration
   },
   {
     'NeogitOrg/neogit',
