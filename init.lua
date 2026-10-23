@@ -116,9 +116,46 @@ vim.schedule(function()
   vim.o.clipboard = 'unnamedplus'
 end)
 
-vim.o.foldmethod = 'expr'
-vim.o.foldexpr = 'nvim_treesitter#foldexpr()'
-vim.o.foldlevel = 10
+-- SIMPLE
+-- vim.o.foldenable = true
+-- vim.o.foldlevel = 99
+-- vim.o.foldmethod = 'expr'
+-- vim.o.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+-- vim.o.foldtext = ''
+-- vim.opt.foldcolumn = '0'
+-- vim.opt.fillchars:append { fold = ' ' }
+
+-- CUSTOM
+-- vim.o.foldmethod = 'expr'
+-- vim.o.foldexpr = 'nvim_treesitter#foldexpr()'
+-- vim.o.foldlevel = 10
+--
+-- vim.opt.foldcolumn = 'auto:2'
+--
+-- vim.opt.fillchars = {
+--   foldopen = '',
+--   foldclose = '',
+--   foldsep = ' ',
+-- }
+--
+-- vim.opt.foldtext = 'v:lua.MyFoldText()'
+--
+-- function _G.MyFoldText()
+--   local line = vim.fn.getline(vim.v.foldstart)
+--   local count = vim.v.foldend - vim.v.foldstart + 1
+--   local width = vim.api.nvim_win_get_width(0)
+--
+--   local suffix = ('[%d lines]'):format(count)
+--   local available = width - vim.fn.strdisplaywidth(suffix) - 1
+--
+--   if vim.fn.strdisplaywidth(line) > available then
+--     line = vim.fn.strcharpart(line, 0, available - 1) .. '…'
+--   end
+--
+--   local padding = math.max(1, width - vim.fn.strdisplaywidth(line) - vim.fn.strdisplaywidth(suffix) - 10)
+--
+--   return line .. string.rep(' ', padding) .. suffix
+-- end
 
 -- Automatically open fold when the cursor enters it
 -- vim.api.nvim_create_autocmd('CursorMoved', {
@@ -133,12 +170,6 @@ vim.o.foldlevel = 10
 --     end
 --   end,
 -- })
-
--- vim.filetype.add {
---   extension = {
---     eruby = 'erb',
---   },
--- }
 
 -- Enable break indent
 vim.o.breakindent = true
@@ -204,8 +235,21 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
-vim.keymap.set('n', ']d', vim.diagnostic.jump, { desc = 'Go to the [D]iagnostic message' })
-vim.keymap.set('n', ']o', vim.diagnostic.open_float, { desc = '[O] pen float message' })
+
+vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float)
+vim.keymap.set('n', ']d', function()
+  vim.diagnostic.jump { count = 1 }
+end, { desc = 'Next [D]iagnostic' })
+
+vim.keymap.set('n', '[d', function()
+  vim.diagnostic.jump { count = -1 }
+end, { desc = 'Previous [D]iagnostic' })
+
+vim.keymap.set('n', '<leader>Q', function()
+  vim.diagnostic.setqflist()
+end, { desc = 'Project diagnostics (Quickfix)' })
+
+vim.keymap.set('n', ']o', vim.diagnostic.open_float, { desc = 'Open float message' })
 
 vim.keymap.set('n', '-', '<cmd>Oil<CR>', { desc = 'Open oil for current dir' })
 
@@ -780,7 +824,7 @@ require('lazy').setup({
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
         -- clangd = {},
-        gopls = {}, -- GoLang
+        gopls = {},
         tailwindcss = {
           settings = {
             tailwindCSS = {
@@ -790,111 +834,27 @@ require('lazy').setup({
               },
             },
           },
-
-          filetypes = {
-            'go',
-            'html',
-            'javascript',
-            'javascriptreact',
-            'markdown',
-            'php',
-            'svelte',
-            'typescript',
-            'typescriptreact',
-            'vue',
-          },
-        }, -- Tailwind support
-        ruby_lsp = {}, -- Ruby support
-        vue_ls = {
-          init_options = {
-            vue = {
-              hybridMode = true,
-            },
-          },
-          settings = {
-            typescript = {
-              inlayHints = {
-                enumMemberValues = {
-                  enabled = true,
-                },
-                functionLikeReturnTypes = {
-                  enabled = true,
-                },
-                propertyDeclarationTypes = {
-                  enabled = true,
-                },
-                parameterTypes = {
-                  enabled = true,
-                  suppressWhenArgumentMatchesName = true,
-                },
-                variableTypes = {
-                  enabled = true,
-                },
-              },
-            },
-          },
+          filetypes = { 'go', 'html', 'javascript', 'javascriptreact', 'markdown', 'php', 'svelte', 'typescript', 'typescriptreact', 'vue', 'svelte' },
         },
-
-        -- pyright = {},
-        -- rust_analyzer = {},
-        -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
-        --
-        -- Some languages (like typescript) have entire language plugins that can be useful:
-        --    https://github.com/pmizio/typescript-tools.nvim
-        --
-        -- But for many setups, the LSP (`ts_ls`) will work just fine
-        ts_ls = {
-          settings = {
-            typescript = {
-              plugins = {
-                {
-                  name = '@vue/typescript-plugin',
-                  location = vim.fn.expand(
-                    vim.fn.stdpath 'data' .. '/mason/packages/vue-language-server/node_modules/@vue/language-server/node_modules/@vue/typescript-plugin'
-                  ),
-                  languages = { 'vue' },
-                },
-              },
-            },
-            javascript = {
-              plugins = {
-                {
-                  name = '@vue/typescript-plugin',
-                  location = vim.fn.expand(
-                    vim.fn.stdpath 'data' .. '/mason/packages/vue-language-server/node_modules/@vue/language-server/node_modules/@vue/typescript-plugin'
-                  ),
-                  languages = { 'vue' },
-                },
-              },
-            },
-          },
-          filetypes = {
-            'typescript',
-            'javascript',
-            'javascriptreact',
-            'typescriptreact',
-            'vue',
-          },
-        }, -- Typescript
-        beancount = {},
+        -- beancount = {}, -- needs cargo
+        beancount = { cmd = { 'beancount-language-server' } }, -- system binary
+        ruby_lsp = {}, -- Ruby support
+        markdown_oxide = {}, -- Markdown PKM
+        svelte = {},
+        -- ts_ls = {},
+        -- vtsls = {},
+        vue_ls = {},
         lua_ls = {
-          -- cmd = { ... },
-          -- filetypes = { ... },
-          -- capabilities = {},
           settings = {
             Lua = {
-              completion = {
-                callSnippet = 'Replace',
-              },
-              -- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
-              -- diagnostics = { disable = { 'missing-fields' } },
+              completion = { callSnippet = 'Replace' },
             },
           },
         },
       }
 
       -- Ensure the servers and tools above are installed
-      --
+
       -- To check the current status of installed tools and/or manually install
       -- other tools, you can run
       --    :Mason
@@ -926,6 +886,12 @@ require('lazy').setup({
           end,
         },
       }
+      vim.lsp.config('beancount', {
+        cmd = { vim.fn.exepath 'beancount-language-server', '--stdio' },
+        capabilities = capabilities,
+        filetypes = { 'beancount' },
+      })
+      vim.lsp.enable 'beancount'
     end,
   },
 
@@ -1037,6 +1003,11 @@ require('lazy').setup({
         --
         -- See :h blink-cmp-config-keymap for defining your own keymap
         preset = 'default',
+        ['<Tab>'] = { 'select_next', 'fallback' },
+        ['<S-Tab>'] = { 'select_prev', 'fallback' },
+
+        -- Enter confirms the current selection
+        ['<CR>'] = { 'accept', 'fallback' },
 
         -- For more advanced Luasnip keymaps (e.g. selecting choice nodes, expansion) see:
         --    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
@@ -1052,6 +1023,11 @@ require('lazy').setup({
         -- By default, you may press `<c-space>` to show the documentation.
         -- Optionally, set `auto_show = true` to show the documentation after a delay.
         documentation = { auto_show = false, auto_show_delay_ms = 500 },
+        list = {
+          selection = {
+            preselect = false,
+          },
+        },
       },
 
       sources = {
@@ -1118,8 +1094,8 @@ require('lazy').setup({
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      -- vim.o.background = 'light'
-      -- vim.cmd.colorscheme 'tokyonight'
+      -- vim.o.background = 'dark'
+      -- vim.cmd.colorscheme 'tokyonight-moon'
     end,
   },
   {
@@ -1136,7 +1112,53 @@ require('lazy').setup({
       vim.api.nvim_set_hl(0, 'Comment', { fg = '#FF2E9F', italic = true })
     end,
   },
+  { 'catppuccin/nvim', name = 'catppuccin', priority = 1000 },
+  {
+    'loctvl842/monokai-pro.nvim',
+    name = 'monokai-pro',
+    priority = 1000,
+    opts = {
+      override = function(c)
+        return {
+          ['@markup.heading.1.markdown'] = { fg = c.base.magenta, bold = true },
+          ['@markup.heading.2.markdown'] = { fg = c.base.blue, bold = true },
+          ['@markup.heading.3.markdown'] = { fg = c.base.green, bold = true },
+          ['@markup.heading.4.markdown'] = { fg = c.base.red, bold = true },
+          ['@markup.heading.5.markdown'] = { fg = c.base.yellow, bold = true },
+          ['@markup.quote.markdown'] = { bg = '#f1e0da', italic = true },
+          ['OilDir'] = { bg = '#f1e0da', fg = c.base.red, italic = true },
 
+          ['@keyword.function'] = { bold = true, italic = true },
+          ['@string'] = { fg = c.base.cyan, italic = true },
+          ['@function'] = { bold = true, italic = true },
+          ['@keyword.function.go'] = { bold = true, italic = true },
+          ['Comment'] = { fg = c.base.red },
+          ['@variable'] = { fg = c.base.dimmed1 },
+          -- ['@variable.parameter'] = { bg = c.base.yellow },
+          -- ['@type'] = { fg = c.base.red, },
+        }
+      end,
+    },
+  },
+  -- ---@type MonokaiPro.Palette
+  -- return {
+  --   dark2 = "#d3cdcc",
+  --   dark1 = "#ede7e5",
+  --   background = "#faf4f2", -- black
+  --   text = "#29242a",     -- white
+  --   accent1 = "#e14775", -- red
+  --   accent2 = "#e16032", -- blue
+  --   accent3 = "#cc7a0a", -- yellow
+  --   accent4 = "#269d69", -- green
+  --   accent5 = "#1c8ca8", -- cyan
+  --   accent6 = "#7058be", -- magenta
+  --   dimmed1 = "#706b6e",
+  --   dimmed2 = "#918c8e",
+  --   dimmed3 = "#a59fa0",
+  --   dimmed4 = "#bfb9ba",
+  --   dimmed5 = "#d3cdcc",
+  --   dark = "#19181a",      -- darker background
+  -- }
   -- Highlight tmdo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
 
@@ -1180,11 +1202,12 @@ require('lazy').setup({
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
-    branch = 'main', -- NOTE; not the master branch! (this is for NeoTests)
-
-    -- main = 'nvim-treesitter.configs', -- Sets main module to use for opts
+    branch = 'master',
+    lazy = false,
+    main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
+      sync_install = false,
       ensure_installed = {
         'bash',
         'c',
@@ -1198,7 +1221,8 @@ require('lazy').setup({
         'vim',
         'vimdoc',
         'go',
-        -- vim.filetype.add {
+        'php',
+        'svelte',
         'javascript',
         'json',
         'typescript',
@@ -1206,18 +1230,14 @@ require('lazy').setup({
       },
       -- Autoinstall languages that are not installed
       auto_install = true,
-      matchup = {
-        enable = true, -- mandatory, false will disable the whole extension
-        -- disable = { 'c', 'ruby' }, -- optional, list of language that will be disabled
-        -- [options]
+      highlight = {
+        enable = true,
+        --   -- Some languages depend on vim's regex highlighting system (such as Ruby) for indent rules.
+        --   --  If you are experiencing weird indenting issues, add the language to
+        --   --  the list of additional_vim_regex_highlighting and disabled languages for indent.
+        --   -- additional_vim_regex_highlighting = { 'ruby' },
+        additional_vim_regex_highlighting = false,
       },
-      -- highlight = {
-      --   enable = true,
-      --   -- Some languages depend on vim's regex highlighting system (such as Ruby) for indent rules.
-      --   --  If you are experiencing weird indenting issues, add the language to
-      --   --  the list of additional_vim_regex_highlighting and disabled languages for indent.
-      --   -- additional_vim_regex_highlighting = { 'ruby' },
-      -- },
       indent = { enable = true, disable = { 'ruby' } },
     },
     -- There are additional nvim-treesitter modules that you can use to interact
@@ -1304,14 +1324,68 @@ vim.keymap.set('n', '<leader>td', function()
   end
 end, { desc = 'Toggle todo.txt float' })
 
-vim.keymap.set('n', '<leader>w', function()
+vim.keymap.set('n', '<leader>tw', function()
+  local function get_week_file()
+    local now = os.time()
+    local date = os.date('*t', now)
+
+    -- Find Monday of current week
+    local days_since_monday = (date.wday - 2) % 7
+    local monday = os.time {
+      year = date.year,
+      month = date.month,
+      day = date.day - days_since_monday,
+      hour = 0,
+    }
+    local sunday = monday + 6 * 86400
+
+    local mon = os.date('*t', monday)
+    local sun = os.date('*t', sunday)
+
+    -- ISO week number (based on Monday)
+    local jan1 = os.time { year = mon.year, month = 1, day = 1, hour = 0 }
+    local jan1_wday = os.date('*t', jan1).wday
+    local jan1_offset = (jan1_wday - 2) % 7
+    local day_of_year = math.floor((monday - jan1) / 86400)
+    local iso_week = math.floor((day_of_year + jan1_offset) / 7) + 2
+
+    return string.format('%d-%02d-W%02d-%02d-%02d', mon.year, mon.month, iso_week, mon.day, sun.day)
+  end
+
+  local week_name = get_week_file()
+  local filepath = vim.fn.expand('~/dev/00-agenda/' .. week_name .. '.md')
   local filename = vim.api.nvim_buf_get_name(0)
-  if filename:match 'todo.txt$' then
+
+  if filename:match 'W%d+%-%d+%-%d+%.md$' then
     vim.cmd 'w | q'
   else
-    vim.cmd 'w'
+    -- Create file if it doesn't exist
+    if vim.fn.filereadable(filepath) == 0 then
+      local f = io.open(vim.fn.expand(filepath), 'w')
+      if f then
+        f:write('# ' .. week_name .. '\n')
+        f:close()
+      end
+    end
+
+    local buf = vim.api.nvim_create_buf(false, true)
+    local width = math.floor(vim.o.columns * 0.6)
+    local height = math.floor(vim.o.lines * 0.6)
+    local row = math.floor((vim.o.lines - height) / 2)
+    local col = math.floor((vim.o.columns - width) / 2)
+
+    vim.api.nvim_open_win(buf, true, {
+      relative = 'editor',
+      width = width,
+      height = height,
+      row = row,
+      col = col,
+      border = 'rounded',
+    })
+
+    vim.cmd('edit ' .. filepath)
   end
-end, { desc = 'Save or Save & Exit todo.txt' })
+end, { desc = 'Toggle weekly agenda float' })
 
 vim.cmd [[
   command! W  w
@@ -1360,30 +1434,34 @@ keymap({ 'n', 'v' }, 's', '"_s', opts)
 -- })
 --
 --
---- vim.g.spellfile_URL = 'https://ftp.nluug.nl/vim/runtime/spell/'
---- vim.opt.spell = true
--- vim.opt.spelllang = { 'en', 'es', 'it', 'fr' }
---- vim.opt.spelllang = { 'es', 'en' }
--- vim.api.nvim_set_hl(0, 'SpellBad', { undercurl = true, sp = 'red' })
--- vim.api.nvim_set_hl(0, 'SpellCap', { undercurl = true, sp = 'Blue' }) -- Capitalization errors
--- vim.api.nvim_set_hl(0, 'SpellLocal', { undercurl = true, sp = 'Green' }) -- Local spelling variants
--- vim.api.nvim_set_hl(0, 'SpellRare', { undercurl = true, sp = 'Magenta' }) -- Rare words
 --
+-- vim.opt.spell = true
+--  vim.opt.spelllang = { 'en', 'es', 'it', 'fr' }
+vim.opt.spelllang = { 'es', 'en' }
+vim.api.nvim_set_hl(0, 'SpellBad', { undercurl = true, sp = 'red' })
+vim.api.nvim_set_hl(0, 'SpellCap', { undercurl = true, sp = 'Blue' }) -- Capitalization errors
+vim.api.nvim_set_hl(0, 'SpellLocal', { undercurl = true, sp = 'Green' }) -- Local spelling variants
+vim.api.nvim_set_hl(0, 'SpellRare', { undercurl = true, sp = 'Magenta' }) -- Rare words
+
+vim.keymap.set('n', '<leader>wz', function()
+  require('zen-mode').toggle()
+end, { desc = 'Toggle ZenMode' })
+
+vim.keymap.set('n', '<leader>wc', function()
+  if vim.wo.spell then
+    vim.cmd 'set nospell'
+    vim.notify 'Spell off'
+  else
+    vim.cmd 'set spell spelllang=en,es'
+    vim.notify 'Spell on'
+  end
+end, { desc = 'Toggle spell check' })
 
 vim.keymap.set('n', '<space>oo', function()
   vim.fn.jobstart({ 'fish', '-c', 'open .' }, { detach = true })
 end, { desc = 'Open Thunar...' })
 
--- Auto-imports on save
--- vim.api.nvim_create_autocmd('BufWritePre', {
---   pattern = '*.go',
---   callback = function()
---     vim.lsp.buf.code_action {
---       context = { only = { 'source.organizeImports' } },
---       apply = true,
---     }
---   end,
--- })
+-- GOlang auto save, this doesnt work as well
 --
 vim.api.nvim_create_autocmd('BufWritePre', {
   pattern = '*.go',
@@ -1393,3 +1471,40 @@ vim.api.nvim_create_autocmd('BufWritePre', {
     vim.lsp.buf.code_action { context = { only = { 'source.fixAll' } }, apply = true }
   end,
 })
+
+-- Working setup for Vue
+
+local vue_language_server_path = vim.fn.stdpath 'data' .. '/mason/packages/vue-language-server/node_modules/@vue/language-server'
+
+local vue_plugin = {
+  name = '@vue/typescript-plugin',
+  location = vue_language_server_path,
+  languages = { 'vue' },
+  configNamespace = 'typescript',
+}
+
+vim.lsp.config('vtsls', {
+  settings = {
+    vtsls = {
+      tsserver = {
+        globalPlugins = {
+          vue_plugin,
+        },
+      },
+    },
+  },
+  filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' },
+})
+
+vim.lsp.enable 'vue_ls'
+vim.lsp.enable 'vtsls'
+
+vim.cmd 'colorscheme monokai-pro-light'
+
+-- vim.api.nvim_set_hl(0, 'FoldColumn', { fg = '#89b4fa', bg = 'NONE' })
+-- vim.api.nvim_set_hl(0, 'Folded', {
+--   fg = '#1C2B2B',
+--   bg = '#EBF2F2',
+--   -- bg = '#B6CFCF',
+--   bold = true,
+-- })
