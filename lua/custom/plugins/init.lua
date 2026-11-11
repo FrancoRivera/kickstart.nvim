@@ -228,6 +228,7 @@ return {
       vim.g['test#strategy'] = 'neovim' -- runs tests inside a floating terminal
     end,
   },
+
   {
     'nickjvandyke/opencode.nvim',
     version = '*', -- Latest stable release

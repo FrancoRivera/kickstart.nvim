@@ -1200,13 +1200,13 @@ require('lazy').setup({
       --  Check out: https://github.com/echasnovski/mini.nvim
     end,
   },
-  -- There are additional nvim-treesitter modules that you can use to interact
-  -- with nvim-treesitter. You should go explore a few and see what interests you:
-  --
-  --    - Incremental selection: Included, see `:help nvim-treesitter-incremental-selection-mod`
-  --    - Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
-  --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
-  {
+  { -- Highlight, edit, and navigate code
+    -- There are additional nvim-treesitter modules that you can use to interact
+    -- with nvim-treesitter. You should go explore a few and see what interests you:
+    --
+    --    - Incremental selection: Included, see `:help nvim-treesitter-incremental-selection-mod`
+    --    - Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
+    --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
     'nvim-treesitter/nvim-treesitter',
     branch = 'main',
     lazy = false,
@@ -1236,15 +1236,27 @@ require('lazy').setup({
         'vimdoc',
         'go',
         'php',
+        'python',
+        'htmldjango',
         'svelte',
         'javascript',
         'json',
+        'css',
+        'scss',
         'typescript',
+        'tsx',
+        'yaml',
+        'toml',
+        'sql',
+        'gomod',
+        'gowork',
+        'jsdoc',
+        'phpdoc',
         'vue',
+        'dockerfile',
       }
     end,
   },
-
   -- The following comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
   -- place them in the correct locations.
